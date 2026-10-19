@@ -802,18 +802,6 @@ body.cursed .tile .glyph {
   animation-delay: calc(var(--i) * -0.83s);
 }
 
-.tile[data-distort='flip'] .glyph {
-  transform: rotate(180deg);
-}
-
-.tile[data-distort='mirror'] .glyph {
-  transform: scaleX(-1);
-}
-
-.tile.found .glyph {
-  transform: none;
-}
-
 @keyframes flicker {
   0%,
   92%,

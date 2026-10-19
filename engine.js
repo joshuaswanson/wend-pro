@@ -11,9 +11,9 @@
   const MIX_OVERRIDES = { medium: { count: [6, 6], len: [3, 5] } };
 
   const CURSES = {
-    easy: { portals: 1, fog: 1, flipRate: 0.15 },
-    medium: { portals: 2, fog: 2, flipRate: 0.18 },
-    hard: { portals: 2, fog: 3, flipRate: 0.2 },
+    easy: { portals: 1, fog: 1 },
+    medium: { portals: 2, fog: 2 },
+    hard: { portals: 2, fog: 3 },
   };
 
   function mulberry32(seed) {
@@ -253,22 +253,17 @@
         at += word.length + gaps[i + 1];
       });
 
-      const puzzle = { lang, diff, seed, cursed, rows, cols, grid, adj, links, words: placed, fog: [], distort: {} };
-      if (cursed) addVisualCurses(puzzle, curse, rng);
+      const puzzle = { lang, diff, seed, cursed, rows, cols, grid, adj, links, words: placed, fog: [] };
+      if (cursed) addFog(puzzle, curse, rng);
       return puzzle;
     }
     throw new Error(`Could not generate a ${diff} puzzle for ${lang}`);
   }
 
-  function addVisualCurses(puzzle, curse, rng) {
+  function addFog(puzzle, curse, rng) {
     const portalCells = new Set(puzzle.links.flat());
     const letterCells = puzzle.grid.map((l, i) => (l ? i : -1)).filter((i) => i >= 0 && !portalCells.has(i));
-    puzzle.fog = shuffle(rng, letterCells.slice()).slice(0, curse.fog);
-    const fogged = new Set(puzzle.fog);
-    for (const cell of letterCells) {
-      if (fogged.has(cell) || rng() >= curse.flipRate) continue;
-      puzzle.distort[cell] = rng() < 0.5 ? 'flip' : 'mirror';
-    }
+    puzzle.fog = shuffle(rng, letterCells).slice(0, curse.fog);
   }
 
   function tracePaths(word, grid, adj, free, prefix) {

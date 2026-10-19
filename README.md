@@ -12,7 +12,7 @@ Check it out here: https://joshuaswanson.github.io/wend-pro/
 - **Difficulty**: Easy (4×4), Medium (5×5), Hard (6×6).
 - **Languages**: English, French, German, and Züritüütsch (Zürich Swiss German).
 - **Mixed**: equal numbers of English, French, and German words in one board.
-- **Cursed**: portals that link two tiles, fogged tiles that stay hidden until a neighbouring word is found, and letters drawn upside down or mirrored.
+- **Cursed**: portals that link two tiles, and fogged tiles that stay hidden until a neighbouring word is found.
 
 ## How puzzles are made
 

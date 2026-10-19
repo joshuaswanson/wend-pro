@@ -142,7 +142,7 @@
   }
 
   function buildBoard() {
-    const { rows, cols, grid, links, distort, seed } = state.puzzle;
+    const { rows, cols, grid, links, seed } = state.puzzle;
     el.board.classList.remove('celebrate');
     el.board.style.setProperty('--rows', rows);
     el.board.style.setProperty('--cols', cols);
@@ -166,7 +166,6 @@
       const tile = document.createElement('div');
       tile.className = 'tile';
       tile.style.setProperty('--tilt', `${tiltFor(i)}deg`);
-      if (distort[i]) tile.dataset.distort = distort[i];
       const glyph = document.createElement('span');
       glyph.className = 'glyph';
       tile.append(glyph);
