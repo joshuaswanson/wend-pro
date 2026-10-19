@@ -10,6 +10,7 @@
   const PREFS_KEY = 'wendpro.prefs';
   const STATS_KEY = 'wendpro.stats';
   const DOUBLE_TAP_MS = 350;
+  const HINT_COOLDOWN_MS = 30000;
   const HIT_RADIUS = 0.42;
 
   const WIN_TITLES = ['Nicely wended.', 'Every letter home.', 'Clean sweep.', 'Board cleared.', 'Wend mastered.'];
@@ -26,6 +27,7 @@
     puzzleId: document.getElementById('puzzle-id'),
     share: document.getElementById('share-btn'),
     hint: document.getElementById('hint-btn'),
+    hintLabel: document.getElementById('hint-label'),
     undo: document.getElementById('undo-btn'),
     reset: document.getElementById('reset-btn'),
     next: document.getElementById('new-btn'),
@@ -97,6 +99,7 @@
       found: [],
       hints: {},
       hintsUsed: 0,
+      hintCharged: 0,
       unfogged: new Set(),
       trail: [],
       dragging: false,
@@ -359,7 +362,20 @@
 
     el.undo.disabled = state.solved || !state.found.length;
     el.reset.disabled = state.solved || !state.found.length;
-    el.hint.disabled = state.solved || !state.started;
+    renderHint();
+  }
+
+  // Game time left until the next hint, measured from the start or the last hint.
+  const hintWait = () => Math.max(0, HINT_COOLDOWN_MS - (elapsedMs() - state.hintCharged));
+
+  function renderHint() {
+    const wait = hintWait();
+    const cooling = state.started && !state.solved && wait > 0;
+    if (el.hint.classList.contains('cooling') && !cooling && state.started && !state.solved) retrigger(el.hint, 'ready');
+    el.hint.classList.toggle('cooling', cooling);
+    el.hint.disabled = !state.started || state.solved || wait > 0;
+    el.hint.style.setProperty('--charge', 1 - wait / HINT_COOLDOWN_MS);
+    el.hintLabel.textContent = cooling ? `Hint ${Math.ceil(wait / 1000)}s` : 'Hint';
   }
 
   /* Board drawing, in cell units: the SVG viewBox is one unit per cell */
@@ -566,7 +582,9 @@
   }
 
   setInterval(() => {
-    if (state) el.timer.textContent = formatTime(elapsedMs());
+    if (!state) return;
+    el.timer.textContent = formatTime(elapsedMs());
+    renderHint();
   }, 250);
 
   document.addEventListener('visibilitychange', () => (document.hidden ? pauseClock() : resumeClock()));
@@ -663,7 +681,7 @@
   }
 
   function giveHint() {
-    if (!state.started || state.solved) return;
+    if (!state.started || state.solved || hintWait() > 0) return;
     clearTrail();
     const open = unfoundWords().filter((w) => (state.hints[w] || 0) < w.length);
     if (!open.length) {
@@ -675,6 +693,7 @@
     const word = started[0] || open[Math.floor(Math.random() * open.length)];
     state.hints[word] = (state.hints[word] || 0) + 1;
     state.hintsUsed++;
+    state.hintCharged = elapsedMs();
     const cell = state.solution[word][state.hints[word] - 1];
     if (isFogged(cell)) {
       state.unfogged.add(cell);

@@ -975,6 +975,44 @@ body.cursed .logo-path {
   transform: translateY(1px);
 }
 
+#hint-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+#hint-btn > * {
+  position: relative;
+}
+
+#hint-btn.cooling::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--charge, 0) * 100%);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  transition: width 0.25s linear;
+}
+
+#hint-btn.cooling:disabled {
+  opacity: 1;
+  color: var(--muted);
+}
+
+#hint-label {
+  font-variant-numeric: tabular-nums;
+}
+
+#hint-btn.ready {
+  animation: hint-ready 0.7s ease;
+}
+
+@keyframes hint-ready {
+  30% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 35%, transparent);
+  }
+}
+
 .btn.primary {
   border-color: transparent;
   background: var(--accent);
