@@ -115,12 +115,14 @@ body {
 button {
   font: inherit;
   color: inherit;
+  touch-action: manipulation;
 }
 
 .app {
   max-width: 560px;
   margin: 0 auto;
-  padding: max(20px, env(safe-area-inset-top)) 16px 40px;
+  padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(40px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -170,6 +172,7 @@ h1 {
   font-size: 30px;
   letter-spacing: -0.02em;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .pro {
@@ -429,6 +432,7 @@ body.cursed .curse-label {
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .lines {
@@ -1156,17 +1160,50 @@ kbd {
 }
 
 @media (max-width: 420px) {
+  .app {
+    gap: 12px;
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+  }
+
   h1 {
     font-size: 26px;
   }
 
+  .logo {
+    width: 34px;
+    height: 34px;
+  }
+
   .segmented button {
     font-size: 13px;
-    padding: 9px 8px;
+    padding: 9px 6px;
+  }
+
+  .card {
+    gap: 12px;
+    padding: 12px 10px 14px;
+    border-radius: 20px;
+  }
+
+  .readout {
+    height: 34px;
+    font-size: 24px;
+  }
+
+  .tile {
+    font-size: calc(100cqw / var(--cols) * 0.32);
   }
 
   .actions {
     grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  .actions .btn {
+    padding: 11px 4px;
+    font-size: 13px;
+    gap: 4px;
   }
 
   .actions .primary {
@@ -1175,6 +1212,14 @@ kbd {
 
   .curse-label {
     display: none;
+  }
+
+  .sheet {
+    padding: 22px 16px 18px;
+  }
+
+  .stat-value {
+    font-size: 19px;
   }
 }
 
