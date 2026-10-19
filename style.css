@@ -1083,6 +1083,7 @@ body.cursed .logo-path {
 }
 
 .foot a {
+  white-space: nowrap;
   color: var(--ink);
   text-decoration-color: var(--line);
   text-underline-offset: 3px;
