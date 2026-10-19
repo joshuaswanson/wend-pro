@@ -19,6 +19,7 @@
     board: document.getElementById('board'),
     cells: document.getElementById('cells'),
     lines: document.getElementById('lines'),
+    portalLayer: document.getElementById('portal-layer'),
     words: document.getElementById('words'),
     readout: document.getElementById('readout'),
     timer: document.getElementById('timer'),
@@ -49,6 +50,8 @@
 
   let state = null;
   let tiles = [];
+  let beams = [];
+  let liveLinks = new Set();
   let messageTimer = 0;
   let lastFoundTap = { word: null, time: 0 };
 
@@ -155,9 +158,7 @@
 
       if (portalOf.has(i)) {
         slot.dataset.portal = portalOf.get(i);
-        const ring = document.createElement('div');
-        ring.className = 'portal-ring';
-        slot.append(ring);
+        slot.append(buildPortal(i));
       }
       const tile = document.createElement('div');
       tile.className = 'tile';
@@ -174,8 +175,99 @@
       return tile;
     });
 
+    buildBeams();
     el.puzzleId.textContent = `No. ${String(seed).padStart(6, '0')}`;
     syncControls();
+  }
+
+  /* Portals */
+
+  function spiralArm(offset, turns = 0.7, inner = 22, outer = 48, steps = 28) {
+    let d = '';
+    for (let s = 0; s <= steps; s++) {
+      const t = s / steps;
+      const r = inner + (outer - inner) * t;
+      const a = offset + t * turns * 2 * Math.PI;
+      d += `${s ? 'L' : 'M'}${(r * Math.cos(a)).toFixed(2)} ${(r * Math.sin(a)).toFixed(2)}`;
+    }
+    return d;
+  }
+
+  const PORTAL_ARMS = [0, 1, 2, 3].map((k) => spiralArm((k * Math.PI) / 2));
+
+  function buildPortal(cell) {
+    const portal = document.createElement('div');
+    portal.className = 'portal';
+    const arms = (className) =>
+      `<g class="${className}">${PORTAL_ARMS.map(
+        (d, k) => `<path d="${d}" style="stroke:var(--p${k % 2 ? 'b' : 'a'})"/>`
+      ).join('')}</g>`;
+    portal.innerHTML = `<svg viewBox="-50 -50 100 100">
+      <defs>
+        <radialGradient id="portal-core-${cell}">
+          <stop offset="0" style="stop-color:#05010d"/>
+          <stop offset="0.34" style="stop-color:#05010d;stop-opacity:0.95"/>
+          <stop offset="0.72" style="stop-color:var(--pa);stop-opacity:0.4"/>
+          <stop offset="1" style="stop-color:var(--pb);stop-opacity:0"/>
+        </radialGradient>
+      </defs>
+      <circle class="core" r="50" fill="url(#portal-core-${cell})"/>
+      ${arms('arms arms-back')}
+      ${arms('arms')}
+      <g class="orbit"><circle cx="38" r="2.6"/><circle cx="-30" cy="17" r="1.8"/><circle cx="6" cy="-27" r="1.4"/></g>
+    </svg>`;
+    portal.addEventListener('animationend', (e) => {
+      if (e.target === portal) portal.classList.remove('surge');
+    });
+    return portal;
+  }
+
+  // Sparks ride the beam between each pair of portals in both directions.
+  function buildBeams() {
+    const { rows, cols, links } = state.puzzle;
+    el.portalLayer.setAttribute('viewBox', `0 0 ${cols} ${rows}`);
+    el.portalLayer.innerHTML = links
+      .map(([a, b], i) => {
+        const d = curve(a, b);
+        const [x1, y1] = center(a);
+        const [x2, y2] = center(b);
+        const sparks = [0, 1, 2, 3, 4, 5]
+          .map((k) => {
+            const points = k % 2 ? '1;0' : '0;1';
+            return `<circle class="spark" r="${0.035 + (k % 3) * 0.01}"><animateMotion dur="2.4s" begin="${(-k * 0.4).toFixed(1)}s" repeatCount="indefinite" keyPoints="${points}" keyTimes="0;1" calcMode="linear" path="${d}"/></circle>`;
+          })
+          .join('');
+        return `<g class="beam-group" data-link="${i}">
+          <defs><linearGradient id="beam-${i}" gradientUnits="userSpaceOnUse" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">
+            <stop offset="0" style="stop-color:var(--portal${i}-a)"/><stop offset="1" style="stop-color:var(--portal${i}-b)"/>
+          </linearGradient></defs>
+          <path class="beam-glow" d="${d}" stroke="url(#beam-${i})"/>
+          <path class="beam" d="${d}" stroke="url(#beam-${i})"/>
+          ${sparks}
+        </g>`;
+      })
+      .join('');
+    beams = [...el.portalLayer.querySelectorAll('.beam-group')];
+    liveLinks = new Set();
+  }
+
+  // A portal pair comes alive while a trail or a found word jumps through it.
+  function renderPortals(owner) {
+    const paths = state.found.map((f) => f.path).concat([state.trail]);
+    const jumpsThrough = (a, b) =>
+      paths.some((p) => p.some((c, k) => k > 0 && ((p[k - 1] === a && c === b) || (p[k - 1] === b && c === a))));
+    state.puzzle.links.forEach(([a, b], i) => {
+      const live = jumpsThrough(a, b);
+      for (const cell of [a, b]) {
+        const slot = tiles[cell].parentElement;
+        slot.classList.toggle('claimed', owner[cell] >= 0 || state.trail.includes(cell));
+        slot.classList.toggle('active', live);
+        if (live && !liveLinks.has(i)) retrigger(slot.querySelector('.portal'), 'surge');
+      }
+      beams[i].classList.toggle('live', live);
+      if (live) liveLinks.add(i);
+      else liveLinks.delete(i);
+    });
   }
 
   function syncControls() {
@@ -261,6 +353,7 @@
     });
 
     renderArt(owner, hinted);
+    renderPortals(owner);
     renderWords();
     renderReadout();
 
@@ -290,7 +383,7 @@
 
   function cellRect(cell, fill, opacity = 1) {
     const { cols } = state.puzzle;
-    return `<rect x="${cell % cols}" y="${Math.floor(cell / cols)}" width="1" height="1" fill="${fill}" opacity="${opacity}"/>`;
+    return `<rect x="${cell % cols}" y="${Math.floor(cell / cols)}" width="1" height="1" style="fill:${fill}" opacity="${opacity}"/>`;
   }
 
   function gridLines() {
@@ -341,8 +434,8 @@
     x += -dx * 0.26 + (dx === 0 ? 0.26 : 0);
     y += -dy * 0.26 + (dy === 0 ? -0.26 : 0);
     return (
-      `<circle class="badge" cx="${x}" cy="${y}" r="0.12" stroke="${color}"/>` +
-      `<path class="badge-tick" stroke="${color}" d="M${x - 0.05} ${y + 0.005}L${x - 0.012} ${y + 0.042}L${x + 0.055} ${y - 0.04}"/>`
+      `<circle class="badge" cx="${x}" cy="${y}" r="0.12" style="stroke:${color}"/>` +
+      `<path class="badge-tick" style="stroke:${color}" d="M${x - 0.05} ${y + 0.005}L${x - 0.012} ${y + 0.042}L${x + 0.055} ${y - 0.04}"/>`
     );
   }
 
@@ -361,22 +454,22 @@
       .map((run) => {
         const pts = run.map((c) => center(c).join(' '));
         if (pts.length === 1) pts.push(pts[0]);
-        return `<path class="capsule" stroke="${color}" d="M${pts.join('L')}"/>`;
+        return `<path class="capsule" style="stroke:${color}" d="M${pts.join('L')}"/>`;
       })
       .join('');
-    out += jumps.map(([a, b]) => `<path class="jump" stroke="${color}" d="${curve(a, b)}"/>`).join('');
+    out += jumps.map(([a, b]) => `<path class="jump" style="stroke:${color}" d="${curve(a, b)}"/>`).join('');
     for (let i = 1; i < path.length; i++) {
       if (isGridAdjacent(path[i - 1], path[i], cols)) out += chevron(path[i - 1], path[i]);
     }
     const [sx, sy] = center(path[0]);
     out += `<circle class="halo" cx="${sx}" cy="${sy}" r="${HALO_RADIUS}"/>`;
-    out += `<circle cx="${sx}" cy="${sy}" r="${DISC_RADIUS}" fill="${color}"/>`;
+    out += `<circle cx="${sx}" cy="${sy}" r="${DISC_RADIUS}" style="fill:${color}"/>`;
     if (found && path.length > 1) out += checkBadge(path, color);
     return out;
   }
 
   function renderArt(owner, hinted) {
-    const { grid, links } = state.puzzle;
+    const { grid } = state.puzzle;
     const parts = [];
     grid.forEach((letter, i) => {
       if (!letter) parts.push(cellRect(i, 'var(--blank)'));
@@ -384,7 +477,6 @@
       else if (isFogged(i)) parts.push(cellRect(i, 'var(--fog)', 0.3));
     });
     parts.push(gridLines(), regionBorders(owner));
-    links.forEach(([a, b], i) => parts.push(`<path class="portal-link" style="stroke:var(--portal${i}-a)" d="${curve(a, b)}"/>`));
     for (const [cell] of hinted) {
       const [x, y] = center(cell);
       if (!state.trail.includes(cell)) parts.push(`<circle class="hint-ring" cx="${x}" cy="${y}" r="${DISC_RADIUS}"/>`);
