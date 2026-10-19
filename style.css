@@ -1000,9 +1000,10 @@ body.cursed .logo-path {
   text-underline-offset: 3px;
 }
 
-/* Cursed Chess ad, in that game's own colours */
+/* Cursed Chess crosslink, in that game's own colours. Content blockers hide
+   class names like ad-label, so these are named crosslink. */
 
-.ad {
+.crosslink {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1019,12 +1020,12 @@ body.cursed .logo-path {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.ad:hover {
+.crosslink:hover {
   transform: translateY(-2px) rotate(-0.4deg);
   box-shadow: 0 30px 60px -24px rgba(255, 46, 136, 0.7);
 }
 
-.ad-label {
+.crosslink-label {
   padding: 5px 12px;
   border-radius: 999px;
   border: 1.5px solid #21e6ff;
@@ -1036,21 +1037,13 @@ body.cursed .logo-path {
   color: #8ff3ff;
 }
 
-.ad-logo {
+.crosslink-logo {
   width: 100%;
   max-width: 420px;
   height: auto;
 }
 
-.ad-copy {
-  max-width: 34ch;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.45;
-  color: rgba(255, 244, 224, 0.85);
-}
-
-.ad-cta {
+.crosslink-cta {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1063,7 +1056,7 @@ body.cursed .logo-path {
   box-shadow: 0 0 0 3px #1b1033, 0 0 0 5px rgba(255, 122, 194, 0.5);
 }
 
-.ad-cta svg {
+.crosslink-cta svg {
   width: 16px;
   height: 16px;
   fill: none;
@@ -1074,7 +1067,7 @@ body.cursed .logo-path {
   transition: transform 0.2s ease;
 }
 
-.ad:hover .ad-cta svg {
+.crosslink:hover .crosslink-cta svg {
   transform: translateX(3px);
 }
 
