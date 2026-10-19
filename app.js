@@ -44,6 +44,7 @@
     help: document.getElementById('help-dialog'),
     helpBtn: document.getElementById('help-btn'),
     helpClose: document.getElementById('help-close'),
+    startBtn: document.getElementById('start-btn'),
   };
 
   let state = null;
@@ -101,7 +102,8 @@
       portalStops: [],
       message: null,
       elapsed: 0,
-      runningSince: document.hidden ? null : performance.now(),
+      runningSince: null,
+      started: false,
       solved: false,
     };
     history.replaceState(null, '', hashFor(options));
@@ -109,6 +111,15 @@
     document.body.classList.toggle('cursed', options.cursed);
     if (el.win.open) el.win.close();
     buildBoard();
+    el.board.classList.add('locked');
+    render();
+  }
+
+  function begin() {
+    if (state.started) return;
+    state.started = true;
+    el.board.classList.remove('locked');
+    resumeClock();
     render();
   }
 
@@ -255,7 +266,7 @@
 
     el.undo.disabled = state.solved || !state.found.length;
     el.reset.disabled = state.solved || !state.found.length;
-    el.hint.disabled = state.solved;
+    el.hint.disabled = state.solved || !state.started;
   }
 
   /* Board drawing, in cell units: the SVG viewBox is one unit per cell */
@@ -416,6 +427,10 @@
       return;
     }
     el.readout.className = 'readout idle';
+    if (!state.started) {
+      el.readout.textContent = 'Ready when you are';
+      return;
+    }
     if (state.solved) {
       el.readout.textContent = `Solved in ${formatTime(elapsedMs())}`;
       return;
@@ -455,7 +470,7 @@
   }
 
   function resumeClock() {
-    if (!state.solved && state.runningSince == null) state.runningSince = performance.now();
+    if (state.started && !state.solved && state.runningSince == null) state.runningSince = performance.now();
   }
 
   setInterval(() => {
@@ -542,21 +557,21 @@
   }
 
   function undo() {
-    if (state.solved || !state.found.length) return;
+    if (!state.started || state.solved || !state.found.length) return;
     state.found.pop();
     clearTrail();
     render();
   }
 
   function reset() {
-    if (state.solved || !state.found.length) return;
+    if (!state.started || state.solved || !state.found.length) return;
     state.found = [];
     clearTrail();
     render();
   }
 
   function giveHint() {
-    if (state.solved) return;
+    if (!state.started || state.solved) return;
     clearTrail();
     const open = unfoundWords().filter((w) => (state.hints[w] || 0) < w.length);
     if (!open.length) {
@@ -649,7 +664,7 @@
   }
 
   function onPointerDown(e) {
-    if (state.solved || e.button > 0) return;
+    if (!state.started || state.solved || e.button > 0) return;
     const cell = cellAt(e, false);
     if (cell == null) return;
     e.preventDefault();
@@ -753,6 +768,7 @@
 
   el.cursed.addEventListener('change', () => newPuzzle({ cursed: el.cursed.checked }));
 
+  el.startBtn.addEventListener('click', begin);
   el.hint.addEventListener('click', giveHint);
   el.undo.addEventListener('click', undo);
   el.reset.addEventListener('click', reset);
@@ -786,7 +802,10 @@
       return;
     }
     if (e.metaKey || e.ctrlKey) return;
-    if (key === 'h') giveHint();
+    if (!state.started && (key === 'enter' || key === ' ')) {
+      e.preventDefault();
+      begin();
+    } else if (key === 'h') giveHint();
     else if (key === 'u') undo();
     else if (key === 'n') newPuzzle();
     else if (key === 'escape') {

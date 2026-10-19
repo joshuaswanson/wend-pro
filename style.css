@@ -624,6 +624,43 @@ body.cursed .curse-label {
   }
 }
 
+.start {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 20px;
+  background: color-mix(in srgb, var(--board-bg) 45%, transparent);
+}
+
+.board.locked .start {
+  display: flex;
+}
+
+.board.locked .lines,
+.board.locked .cells {
+  filter: blur(9px);
+}
+
+.start .start-btn {
+  padding: 14px 40px;
+  border-radius: 999px;
+  font-size: 17px;
+  box-shadow: 0 10px 24px -10px var(--shadow);
+}
+
+.start-note {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--letter);
+}
+
 /* Cursed board */
 
 .portal-ring {
