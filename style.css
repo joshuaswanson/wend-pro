@@ -987,6 +987,10 @@ body.cursed .logo-path {
   display: flex;
 }
 
+.actions .btn {
+  padding: 12px 24px;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
