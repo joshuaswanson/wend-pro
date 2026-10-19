@@ -839,28 +839,8 @@ body.cursed .curse-label {
   --pb: var(--portal1-b);
 }
 
-
 body.cursed .tile .glyph {
   rotate: var(--tilt, 0deg);
-  animation: flicker 7s infinite;
-  animation-delay: calc(var(--i) * -0.83s);
-}
-
-@keyframes flicker {
-  0%,
-  92%,
-  100% {
-    opacity: 1;
-  }
-  93% {
-    opacity: 0.3;
-  }
-  95% {
-    opacity: 0.9;
-  }
-  96% {
-    opacity: 0.2;
-  }
 }
 
 .tile.fog {
