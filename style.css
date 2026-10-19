@@ -913,7 +913,7 @@ body.cursed .logo-path {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 12px;
 }
 
