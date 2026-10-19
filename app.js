@@ -374,7 +374,9 @@
     el.hint.classList.toggle('cooling', cooling);
     el.hint.disabled = !state.started || state.solved || wait > 0;
     el.hint.style.setProperty('--charge', 1 - wait / HINT_COOLDOWN_MS);
-    el.hintLabel.textContent = cooling ? `Hint ${Math.ceil(wait / 1000)}s` : 'Hint';
+    const seconds = Math.ceil(wait / 1000);
+    el.hintLabel.textContent = cooling ? `${seconds}s` : 'Hint';
+    el.hint.setAttribute('aria-label', cooling ? `Hint in ${seconds} seconds` : 'Hint');
   }
 
   /* Board drawing, in cell units: the SVG viewBox is one unit per cell */

@@ -994,6 +994,7 @@ body.cursed .logo-path {
   color: var(--ink);
   font-size: 14px;
   font-weight: 700;
+  white-space: nowrap;
   cursor: pointer;
   transition: transform 0.12s ease, background 0.2s ease, opacity 0.2s ease;
 }
@@ -1010,6 +1011,7 @@ body.cursed .logo-path {
 #hint-btn {
   position: relative;
   overflow: hidden;
+  min-width: max-content;
 }
 
 #hint-btn > * {
@@ -1271,21 +1273,6 @@ kbd {
     font-size: calc(100cqw / var(--cols) * 0.32);
   }
 
-  .actions {
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
-  }
-
-  .actions .btn {
-    padding: 11px 4px;
-    font-size: 13px;
-    gap: 4px;
-  }
-
-  .actions .primary {
-    grid-column: 1 / -1;
-  }
-
   .curse-label {
     display: none;
   }
@@ -1296,6 +1283,12 @@ kbd {
 
   .stat-value {
     font-size: 19px;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
