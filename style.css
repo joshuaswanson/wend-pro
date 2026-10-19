@@ -1000,6 +1000,80 @@ body.cursed .logo-path {
   text-underline-offset: 3px;
 }
 
+/* Cursed Chess ad, in that game's own colours */
+
+.ad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 20px 22px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255, 46, 136, 0.35), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(33, 230, 255, 0.22), transparent 50%),
+    #1b1033;
+  color: #fff4e0;
+  text-decoration: none;
+  box-shadow: 0 24px 50px -26px rgba(106, 31, 214, 0.9);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ad:hover {
+  transform: translateY(-2px) rotate(-0.4deg);
+  box-shadow: 0 30px 60px -24px rgba(255, 46, 136, 0.7);
+}
+
+.ad-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #21e6ff;
+}
+
+.ad-logo {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+}
+
+.ad-copy {
+  max-width: 34ch;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255, 244, 224, 0.85);
+}
+
+.ad-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff2e88, #b52bff);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 0 0 3px #1b1033, 0 0 0 5px rgba(255, 122, 194, 0.5);
+}
+
+.ad-cta svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s ease;
+}
+
+.ad:hover .ad-cta svg {
+  transform: translateX(3px);
+}
+
 /* Dialogs */
 
 .sheet {
