@@ -28,8 +28,6 @@
     share: document.getElementById('share-btn'),
     hint: document.getElementById('hint-btn'),
     hintLabel: document.getElementById('hint-label'),
-    undo: document.getElementById('undo-btn'),
-    reset: document.getElementById('reset-btn'),
     next: document.getElementById('new-btn'),
     diff: document.getElementById('diff-control'),
     lang: document.getElementById('lang-control'),
@@ -359,8 +357,8 @@
     renderWords();
     renderReadout();
 
-    el.undo.disabled = state.solved || !state.found.length;
-    el.reset.disabled = state.solved || !state.found.length;
+    el.hint.hidden = state.solved;
+    el.next.hidden = !state.solved;
     renderHint();
   }
 
@@ -674,13 +672,6 @@
     render();
   }
 
-  function reset() {
-    if (!state.started || state.solved || !state.found.length) return;
-    state.found = [];
-    clearTrail();
-    render();
-  }
-
   function giveHint() {
     if (!state.started || state.solved || hintWait() > 0) return;
     clearTrail();
@@ -882,8 +873,6 @@
 
   el.startBtn.addEventListener('click', begin);
   el.hint.addEventListener('click', giveHint);
-  el.undo.addEventListener('click', undo);
-  el.reset.addEventListener('click', reset);
   el.next.addEventListener('click', () => newPuzzle());
   el.winNext.addEventListener('click', () => newPuzzle());
   el.winClose.addEventListener('click', () => el.win.close());

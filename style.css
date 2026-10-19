@@ -909,9 +909,16 @@ body.cursed .logo-path {
 
 /* Word list: one row of letter chips per word, shortest first */
 
-.words {
+.below {
   width: 100%;
-  max-width: 440px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.words {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -976,10 +983,8 @@ body.cursed .logo-path {
 /* Buttons */
 
 .actions {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1.5fr;
-  gap: 8px;
+  margin-left: auto;
+  display: flex;
 }
 
 .btn {
@@ -999,6 +1004,10 @@ body.cursed .logo-path {
   transition: transform 0.12s ease, background 0.2s ease, opacity 0.2s ease;
 }
 
+.btn[hidden] {
+  display: none;
+}
+
 .btn:hover:not(:disabled) {
   transform: translateY(-1px);
   background: var(--seg-bg);
@@ -1011,7 +1020,6 @@ body.cursed .logo-path {
 #hint-btn {
   position: relative;
   overflow: hidden;
-  min-width: max-content;
 }
 
 #hint-btn > * {
@@ -1283,12 +1291,6 @@ kbd {
 
   .stat-value {
     font-size: 19px;
-  }
-}
-
-@media (max-width: 480px) {
-  .actions {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
