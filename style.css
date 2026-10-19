@@ -1000,75 +1000,36 @@ body.cursed .logo-path {
   text-underline-offset: 3px;
 }
 
-/* Cursed Chess crosslink, in that game's own colours. Content blockers hide
-   class names like ad-label, so these are named crosslink. */
+/* Cursed Chess crosslink. Content blockers hide class names like ad-label,
+   so these are named crosslink. */
 
 .crosslink {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 20px 20px 22px;
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 15% 0%, rgba(255, 46, 136, 0.35), transparent 55%),
-    radial-gradient(circle at 100% 100%, rgba(33, 230, 255, 0.22), transparent 50%),
-    #1b1033;
-  color: #fff4e0;
+  gap: 8px;
+  padding: 4px 0 8px;
   text-decoration: none;
-  box-shadow: 0 24px 50px -26px rgba(106, 31, 214, 0.9);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
 .crosslink:hover {
-  transform: translateY(-2px) rotate(-0.4deg);
-  box-shadow: 0 30px 60px -24px rgba(255, 46, 136, 0.7);
+  opacity: 1;
 }
 
 .crosslink-label {
-  padding: 5px 12px;
-  border-radius: 999px;
-  border: 1.5px solid #21e6ff;
-  background: rgba(33, 230, 255, 0.14);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8ff3ff;
+  color: var(--muted);
 }
 
 .crosslink-logo {
   width: 100%;
-  max-width: 420px;
+  max-width: 200px;
   height: auto;
-}
-
-.crosslink-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 11px 22px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #ff2e88, #b52bff);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  box-shadow: 0 0 0 3px #1b1033, 0 0 0 5px rgba(255, 122, 194, 0.5);
-}
-
-.crosslink-cta svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: transform 0.2s ease;
-}
-
-.crosslink:hover .crosslink-cta svg {
-  transform: translateX(3px);
 }
 
 /* Dialogs */
